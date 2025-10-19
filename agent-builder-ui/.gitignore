@@ -1,0 +1,376 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Package manager lock files (keep package-lock.json for npm)
+yarn.lock
+pnpm-lock.yaml
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+.nyc_output
+
+# ESLint cache
+.eslintcache
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
+
+# Vite build outputs and cache
+.vite/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+
+# Local environment files
+*.local
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary folders
+tmp/
+temp/
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache/
+.parcel-cache/
+
+# Next.js build output
+.next/
+
+# Nuxt.js build / generate output
+.nuxt/
+
+# Gatsby files
+.cache/
+public/
+
+# Storybook build outputs
+.out/
+.storybook-out/
+storybook-static/
+
+# Rollup.js default build output
+dist/
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test/
+
+# Webpack
+.webpack/
+
+# Electron-builder output
+/dist_electron/
+
+# SvelteKit build output
+.svelte-kit/
+
+# Testing
+coverage/
+.coverage/
+junit.xml
+test-results/
+playwright-report/
+test-results.xml
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+# Jest
+jest.config.js.map
+
+# Vitest
+vitest.config.js.timestamp-*
+
+# Local data storage (for dummy mode)
+/data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Certificate files
+*.pem
+*.key
+*.crt
+*.cert
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+docker-compose.*.yml
+!docker-compose.yml
+!docker-compose.dev.yml
+
+# Kubernetes
+*.kubeconfig
+k8s-secrets.yml
+secrets.yml
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Cloud deployment files
+.aws/
+.gcloud/
+.azure/
+
+# Monitoring and analytics
+.sentry/
+newrelic_agent.log
+
+# API keys and secrets
+secrets.json
+credentials.json
+service-account.json
+*.credentials
+
+# Local development overrides
+.env.override
+config.local.json
+settings.local.json
+
+# Performance monitoring
+profile/
+*.cpuprofile
+*.heapprofile
+*.heapsnapshot
+
+# Bundle analyzer
+bundle-analyzer-report.html
+stats.json
+
+# Generated API clients
+/src/generated/
+/src/api/generated/
+
+# Documentation builds
+docs/build/
+docs/.vuepress/dist/
+
+# Temporary React DevTools
+.react-devtools
+
+# Safari extension files
+*.safariextension
+
+# Chrome extension files
+*.crx
+*.pem
+
+# Firefox extension files
+*.xpi
+
+# Locale files (if auto-generated)
+/src/locales/*.json
+!/src/locales/en.json
+
+# Auto-generated types (if any)
+/src/types/generated/
+
+# MacOS specific
+.AppleDouble
+.LSOverride
+Icon?
+
+# Windows specific
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux specific
+*~
+
+# JetBrains IDEs
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Eclipse
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*.tmp
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Local History (VSCode)
+.history/
+
+# Backup files from editors
+*.orig
+
+# Profiling
+profile.*
+*.profile
+
+# Application specific exclusions
+# Add any project-specific files or patterns here
+
+# Build artifacts that should not be committed
+/public/build/
+/public/assets/build/
+
+# Local configuration overrides
+local.config.js
+local.config.ts
+
+# Generated documentation
+/docs/api/
+/docs/coverage/
+
+# Temporary uploads (if any)
+/uploads/
+/tmp-uploads/
+
+# Cache directories
+.cache/
+.temp/
+.tmp/
+
+# Auto-generated service worker
+sw.js
+sw.js.map
+workbox-*.js
+workbox-*.js.map
+
+# PWA related
+manifest.*.json
+!manifest.json

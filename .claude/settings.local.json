@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm run build:*)",
+      "Bash(npm install:*)",
+      "Bash(pg_isready:*)",
+      "Bash(psql:*)",
+      "Bash(timeout 10s npm run dev)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(find:*)",
+      "Bash(python:*)",
+      "Bash(source:*)",
+      "Bash(pip install:*)",
+      "Bash(APP_MODE=dummy python -c \"\nfrom src.app.main import app\nfrom fastapi.testclient import TestClient\n\n# This would normally require additional dependencies, let''s just test import\nprint(''✓ FastAPI app imported successfully'')\nprint(''✓ Ready to run in dummy mode'')\n\")",
+      "Bash(APP_MODE=dummy python -c \"\nfrom src.app.main import app\nprint(''✓ FastAPI app imported successfully'')\nprint(''✓ Application configured for dummy mode'')\nprint(''✓ Ready to start server'')\n\")",
+      "Bash(APP_MODE=dummy python:*)",
+      "Bash(docker build:*)",
+      "Bash(chmod:*)",
+      "Bash(docker-compose config:*)",
+      "Bash(docker:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

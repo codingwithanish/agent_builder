@@ -1,0 +1,26 @@
+[
+  {
+    "id": "mt1",
+    "kind": "tool",
+    "name": "MCP-Email",
+    "description": "Email integration tool for sending and receiving emails"
+  },
+  {
+    "id": "mt2", 
+    "kind": "tool",
+    "name": "MCP-CRM",
+    "description": "CRM integration tool for managing customer relationships"
+  },
+  {
+    "id": "mt3",
+    "kind": "tool",
+    "name": "MCP-Database",
+    "description": "Database connectivity tool for querying and updating data"
+  },
+  {
+    "id": "mt4",
+    "kind": "tool", 
+    "name": "MCP-Slack",
+    "description": "Slack integration tool for team communication"
+  }
+]

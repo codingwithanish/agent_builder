@@ -1,0 +1,55 @@
+# Example Terraform variables file for Agent Builder deployment
+# Copy this file to terraform.tfvars and customize the values
+
+# Basic Configuration
+aws_region   = "us-east-1"
+environment  = "dev"
+project_name = "agent-builder"
+
+# VPC Configuration
+vpc_cidr = "10.0.0.0/16"
+
+# Database Configuration
+db_instance_class = "db.t3.micro"
+db_password      = "your-secure-database-password-here"
+
+# Redis Configuration
+redis_node_type = "cache.t3.micro"
+
+# ECS Configuration
+desired_count = 1
+cpu          = 512
+memory       = 1024
+
+# Auto Scaling Configuration
+enable_auto_scaling        = true
+min_capacity              = 1
+max_capacity              = 10
+target_cpu_utilization    = 70
+
+# Domain and SSL (optional)
+# domain_name     = "your-domain.com"
+# certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+
+# LLM API Keys (set these for production)
+# openai_api_key          = "sk-your-openai-api-key"
+# anthropic_api_key       = "sk-ant-your-anthropic-api-key"
+# azure_openai_api_key    = "your-azure-openai-api-key"
+# azure_openai_endpoint   = "https://your-resource.openai.azure.com/"
+# azure_openai_deployment = "your-deployment-name"
+
+# Security
+jwt_secret = "your-super-secure-jwt-secret-key-change-this"
+
+# Monitoring and Backup
+log_retention_days       = 7
+enable_backup           = true
+backup_retention_period = 7
+monitoring_enabled      = true
+
+# Additional Tags
+tags = {
+  Owner       = "DevOps Team"
+  CostCenter  = "Engineering"
+  Environment = "dev"
+}

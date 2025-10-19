@@ -1,0 +1,20 @@
+[
+  {
+    "id": "ma1",
+    "kind": "agent",
+    "name": "Summarizer",
+    "description": "AI agent that summarizes long text content into concise summaries"
+  },
+  {
+    "id": "ma2",
+    "kind": "agent",
+    "name": "Classifier",
+    "description": "AI agent that classifies content into predefined categories"
+  },
+  {
+    "id": "ma3",
+    "kind": "agent", 
+    "name": "Sentiment Analyzer",
+    "description": "AI agent that analyzes sentiment and emotional tone of text"
+  }
+]

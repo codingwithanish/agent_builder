@@ -1,0 +1,9 @@
+[
+  {
+    "id": "l1",
+    "name": "Claude-Primary",
+    "model": "bedrock:claude-v3",
+    "apiKeyMasked": "***key***",
+    "createdAt": "2025-10-15T00:00:00Z"
+  }
+]
