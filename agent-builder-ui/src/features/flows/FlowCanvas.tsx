@@ -63,19 +63,19 @@ export function FlowCanvas() {
     if (activeFlow) {
       setNodes(currentNodes => {
         const currentNodeMap = new Map(currentNodes.map(n => [n.id, n]));
-        
+
         // Check if we need to update (new nodes, removed nodes, or status changes)
         const currentNodeIds = new Set(currentNodes.map(n => n.id));
         const flowNodeIds = new Set(activeFlow.nodes.map(n => n.id));
-        
-        const nodesChanged = currentNodeIds.size !== flowNodeIds.size || 
+
+        const nodesChanged = currentNodeIds.size !== flowNodeIds.size ||
                            !Array.from(currentNodeIds).every(id => flowNodeIds.has(id));
-        
+
         const statusChanged = activeFlow.nodes.some(node => {
           const currentNode = currentNodeMap.get(node.id);
           return currentNode && currentNode.data.status !== node.status;
         });
-        
+
         if (nodesChanged || statusChanged) {
           return activeFlow.nodes.map(node => {
             const currentNode = currentNodeMap.get(node.id);
@@ -88,11 +88,36 @@ export function FlowCanvas() {
             };
           });
         }
-        
+
         return currentNodes;
       });
     }
   }, [activeFlow?.nodes, setNodes]);
+
+  // Update edges when edges are added/removed
+  useEffect(() => {
+    if (activeFlow) {
+      setEdges(currentEdges => {
+        // Check if edges have changed
+        const currentEdgeIds = new Set(currentEdges.map(e => e.id));
+        const flowEdgeIds = new Set(activeFlow.edges.map(e => e.id));
+
+        const edgesChanged = currentEdgeIds.size !== flowEdgeIds.size ||
+                            !Array.from(currentEdgeIds).every(id => flowEdgeIds.has(id));
+
+        if (edgesChanged) {
+          return activeFlow.edges.map(edge => ({
+            id: edge.id,
+            source: edge.source,
+            target: edge.target,
+            label: edge.label,
+          }));
+        }
+
+        return currentEdges;
+      });
+    }
+  }, [activeFlow?.edges, setEdges]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),

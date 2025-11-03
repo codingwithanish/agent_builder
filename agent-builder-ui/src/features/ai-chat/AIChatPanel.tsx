@@ -5,7 +5,7 @@ import type { ChatMessage, GeneratedFlow } from '@/lib/types';
 
 export function AIChatPanel() {
   const apiClient = useApiClient();
-  const { activeFlow, updateFlow } = useFlowStore();
+  const { activeFlow, updateActiveFlow } = useFlowStore();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -64,11 +64,24 @@ export function AIChatPanel() {
   const applyGeneratedFlow = (generatedFlow: GeneratedFlow) => {
     if (!activeFlow) return;
 
+    // Find existing input and output nodes
+    const inputNode = activeFlow.nodes.find(n => n.kind === 'input');
+    const outputNode = activeFlow.nodes.find(n => n.kind === 'output');
+
+    if (!inputNode || !outputNode) {
+      console.error('Active flow must have input and output nodes');
+      return;
+    }
+
     // Create unique IDs for nodes and edges
     const timestamp = Date.now();
     const nodeIdMap = new Map<string, string>();
 
-    // Generate new IDs for nodes
+    // Map markers to actual node IDs
+    nodeIdMap.set('__INPUT__', inputNode.id);
+    nodeIdMap.set('__OUTPUT__', outputNode.id);
+
+    // Generate new IDs for generated nodes and add to map
     const newNodes = generatedFlow.nodes.map((node, index) => {
       const newId = `${node.kind}-${timestamp}-${index}`;
       nodeIdMap.set(node.id, newId);
@@ -78,7 +91,7 @@ export function AIChatPanel() {
       };
     });
 
-    // Update edge references with new IDs
+    // Update edge references with mapped IDs
     const newEdges = generatedFlow.edges.map((edge, index) => ({
       ...edge,
       id: `edge-${timestamp}-${index}`,
@@ -86,14 +99,29 @@ export function AIChatPanel() {
       target: nodeIdMap.get(edge.target) || edge.target
     }));
 
-    // Merge with existing flow
-    const updatedFlow = {
-      ...activeFlow,
-      nodes: [...activeFlow.nodes, ...newNodes],
-      edges: [...activeFlow.edges, ...newEdges]
-    };
+    // Filter out edges that would duplicate existing input->output connections
+    const existingEdges = activeFlow.edges;
+    const filteredNewEdges = newEdges.filter(newEdge => {
+      // Don't add if this exact edge already exists
+      return !existingEdges.some(existing =>
+        existing.source === newEdge.source && existing.target === newEdge.target
+      );
+    });
 
-    updateFlow(updatedFlow);
+    // Remove any direct input->output edge if we're adding nodes in between
+    const edgesToKeep = existingEdges.filter(edge => {
+      // Keep all edges except direct input->output if we have new nodes
+      if (newNodes.length > 0 && edge.source === inputNode.id && edge.target === outputNode.id) {
+        return false;
+      }
+      return true;
+    });
+
+    // Merge with existing flow
+    updateActiveFlow({
+      nodes: [...activeFlow.nodes, ...newNodes],
+      edges: [...edgesToKeep, ...filteredNewEdges]
+    });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

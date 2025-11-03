@@ -28,6 +28,7 @@ export class DummyApiClient implements ApiClient {
     { id: 'ct4', kind: 'tool', name: 'API Gateway', description: 'Routes and manages API requests', status: 'deployed' },
     { id: 'ct5', kind: 'tool', name: 'Image Processor', description: 'Resizes and optimizes images', status: 'deployed' },
     { id: 'ct6', kind: 'tool', name: 'Webhook Handler', description: 'Receives and processes webhooks', status: 'deployed' },
+    { id: 'ct9', kind: 'tool', name: 'Git Tool', description: 'Git operations for version control and repository management', status: 'deployed' },
     { id: 'ct7', kind: 'tool', name: 'PDF Generator', description: 'Creates PDF documents from templates', status: 'draft' },
     { id: 'ct8', kind: 'tool', name: 'Calendar Sync', description: 'Syncs events with calendar services', status: 'deploying' }
   ];
@@ -74,14 +75,23 @@ export class DummyApiClient implements ApiClient {
         this.resources = JSON.parse(storedResources);
       }
 
+      // For catalog items, merge stored data with defaults to ensure new items appear
       const storedCatalogAgents = localStorage.getItem('agent-builder-catalog-agents');
       if (storedCatalogAgents) {
-        this.catalogAgents = JSON.parse(storedCatalogAgents);
+        const stored = JSON.parse(storedCatalogAgents);
+        // Merge: keep stored items and add any new default items not in storage
+        const storedIds = new Set(stored.map((a: ToolOrAgentCard) => a.id));
+        const newDefaultItems = this.catalogAgents.filter(a => !storedIds.has(a.id));
+        this.catalogAgents = [...stored, ...newDefaultItems];
       }
 
       const storedCatalogTools = localStorage.getItem('agent-builder-catalog-tools');
       if (storedCatalogTools) {
-        this.catalogTools = JSON.parse(storedCatalogTools);
+        const stored = JSON.parse(storedCatalogTools);
+        // Merge: keep stored items and add any new default items not in storage
+        const storedIds = new Set(stored.map((t: ToolOrAgentCard) => t.id));
+        const newDefaultItems = this.catalogTools.filter(t => !storedIds.has(t.id));
+        this.catalogTools = [...stored, ...newDefaultItems];
       }
     } catch (error) {
       console.warn('Failed to load from localStorage:', error);
@@ -381,19 +391,13 @@ export class DummyApiClient implements ApiClient {
 
     // Pattern matching for different types of requests
     if (lowerMessage.includes('code review') || lowerMessage.includes('code reviewer')) {
-      responseText = 'Great! I\'ll create a code review workflow for you. This flow includes an Input node connected to a Code Reviewer agent with the Git Tool attached, followed by a Text Summarizer to summarize the review results.';
+      responseText = 'Great! I\'ll create a code review workflow for you. This flow includes a Code Reviewer agent with the Git Tool attached, followed by a Text Summarizer to summarize the review results.';
 
+      const timestamp = Date.now();
       generatedFlow = {
         nodes: [
           {
-            id: `input-${Date.now()}`,
-            kind: 'input',
-            position: { x: 100, y: 200 },
-            data: { name: 'Code Input' },
-            status: 'draft'
-          },
-          {
-            id: `agent-${Date.now()}-1`,
+            id: `agent-${timestamp}-1`,
             kind: 'agent',
             position: { x: 300, y: 200 },
             data: {
@@ -401,14 +405,14 @@ export class DummyApiClient implements ApiClient {
               name: 'Code Reviewer',
               description: 'Reviews code for best practices',
               env: {},
-              attachedToolIds: ['git-tool']
+              attachedToolIds: ['ct9'] // Git Tool
             },
             status: 'draft'
           },
           {
-            id: `agent-${Date.now()}-2`,
+            id: `agent-${timestamp}-2`,
             kind: 'agent',
-            position: { x: 500, y: 200 },
+            position: { x: 550, y: 200 },
             data: {
               agentId: 'ca1',
               name: 'Text Summarizer',
@@ -417,48 +421,35 @@ export class DummyApiClient implements ApiClient {
               attachedToolIds: []
             },
             status: 'draft'
-          },
-          {
-            id: `output-${Date.now()}`,
-            kind: 'output',
-            position: { x: 700, y: 200 },
-            data: { name: 'Review Summary' },
-            status: 'draft'
           }
         ],
         edges: [
           {
-            id: `edge-${Date.now()}-1`,
-            source: `input-${Date.now()}`,
-            target: `agent-${Date.now()}-1`
+            id: `edge-${timestamp}-1`,
+            source: '__INPUT__', // Marker for existing input node
+            target: `agent-${timestamp}-1`
           },
           {
-            id: `edge-${Date.now()}-2`,
-            source: `agent-${Date.now()}-1`,
-            target: `agent-${Date.now()}-2`
+            id: `edge-${timestamp}-2`,
+            source: `agent-${timestamp}-1`,
+            target: `agent-${timestamp}-2`
           },
           {
-            id: `edge-${Date.now()}-3`,
-            source: `agent-${Date.now()}-2`,
-            target: `output-${Date.now()}`
+            id: `edge-${timestamp}-3`,
+            source: `agent-${timestamp}-2`,
+            target: '__OUTPUT__' // Marker for existing output node
           }
         ],
         description: 'Code Review Workflow'
       };
     } else if (lowerMessage.includes('data') && (lowerMessage.includes('analyze') || lowerMessage.includes('analysis'))) {
-      responseText = 'I\'ll set up a data analysis workflow. This includes an Input node, a Data Analyzer agent, and an output node to present the analysis results.';
+      responseText = 'I\'ll set up a data analysis workflow. This includes a Data Analyzer agent to analyze your data patterns.';
 
+      const timestamp = Date.now();
       generatedFlow = {
         nodes: [
           {
-            id: `input-${Date.now()}`,
-            kind: 'input',
-            position: { x: 100, y: 200 },
-            data: { name: 'Data Input' },
-            status: 'draft'
-          },
-          {
-            id: `agent-${Date.now()}`,
+            id: `agent-${timestamp}`,
             kind: 'agent',
             position: { x: 350, y: 200 },
             data: {
@@ -469,25 +460,18 @@ export class DummyApiClient implements ApiClient {
               attachedToolIds: []
             },
             status: 'draft'
-          },
-          {
-            id: `output-${Date.now()}`,
-            kind: 'output',
-            position: { x: 600, y: 200 },
-            data: { name: 'Analysis Results' },
-            status: 'draft'
           }
         ],
         edges: [
           {
-            id: `edge-${Date.now()}-1`,
-            source: `input-${Date.now()}`,
-            target: `agent-${Date.now()}`
+            id: `edge-${timestamp}-1`,
+            source: '__INPUT__',
+            target: `agent-${timestamp}`
           },
           {
-            id: `edge-${Date.now()}-2`,
-            source: `agent-${Date.now()}`,
-            target: `output-${Date.now()}`
+            id: `edge-${timestamp}-2`,
+            source: `agent-${timestamp}`,
+            target: '__OUTPUT__'
           }
         ],
         description: 'Data Analysis Workflow'
@@ -495,17 +479,11 @@ export class DummyApiClient implements ApiClient {
     } else if (lowerMessage.includes('translate') || lowerMessage.includes('translation')) {
       responseText = 'I\'ll create a translation workflow using the Language Translator agent. This will take input text and translate it to your desired language.';
 
+      const timestamp = Date.now();
       generatedFlow = {
         nodes: [
           {
-            id: `input-${Date.now()}`,
-            kind: 'input',
-            position: { x: 100, y: 200 },
-            data: { name: 'Text Input' },
-            status: 'draft'
-          },
-          {
-            id: `agent-${Date.now()}`,
+            id: `agent-${timestamp}`,
             kind: 'agent',
             position: { x: 350, y: 200 },
             data: {
@@ -516,25 +494,18 @@ export class DummyApiClient implements ApiClient {
               attachedToolIds: []
             },
             status: 'draft'
-          },
-          {
-            id: `output-${Date.now()}`,
-            kind: 'output',
-            position: { x: 600, y: 200 },
-            data: { name: 'Translated Text' },
-            status: 'draft'
           }
         ],
         edges: [
           {
-            id: `edge-${Date.now()}-1`,
-            source: `input-${Date.now()}`,
-            target: `agent-${Date.now()}`
+            id: `edge-${timestamp}-1`,
+            source: '__INPUT__',
+            target: `agent-${timestamp}`
           },
           {
-            id: `edge-${Date.now()}-2`,
-            source: `agent-${Date.now()}`,
-            target: `output-${Date.now()}`
+            id: `edge-${timestamp}-2`,
+            source: `agent-${timestamp}`,
+            target: '__OUTPUT__'
           }
         ],
         description: 'Translation Workflow'
@@ -542,17 +513,11 @@ export class DummyApiClient implements ApiClient {
     } else if (lowerMessage.includes('summarize') || lowerMessage.includes('summary')) {
       responseText = 'I\'ll build a text summarization workflow. This uses the Text Summarizer agent to condense long content into key points.';
 
+      const timestamp = Date.now();
       generatedFlow = {
         nodes: [
           {
-            id: `input-${Date.now()}`,
-            kind: 'input',
-            position: { x: 100, y: 200 },
-            data: { name: 'Long Text' },
-            status: 'draft'
-          },
-          {
-            id: `agent-${Date.now()}`,
+            id: `agent-${timestamp}`,
             kind: 'agent',
             position: { x: 350, y: 200 },
             data: {
@@ -563,25 +528,18 @@ export class DummyApiClient implements ApiClient {
               attachedToolIds: []
             },
             status: 'draft'
-          },
-          {
-            id: `output-${Date.now()}`,
-            kind: 'output',
-            position: { x: 600, y: 200 },
-            data: { name: 'Summary' },
-            status: 'draft'
           }
         ],
         edges: [
           {
-            id: `edge-${Date.now()}-1`,
-            source: `input-${Date.now()}`,
-            target: `agent-${Date.now()}`
+            id: `edge-${timestamp}-1`,
+            source: '__INPUT__',
+            target: `agent-${timestamp}`
           },
           {
-            id: `edge-${Date.now()}-2`,
-            source: `agent-${Date.now()}`,
-            target: `output-${Date.now()}`
+            id: `edge-${timestamp}-2`,
+            source: `agent-${timestamp}`,
+            target: '__OUTPUT__'
           }
         ],
         description: 'Text Summarization Workflow'

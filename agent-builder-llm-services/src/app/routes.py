@@ -487,18 +487,11 @@ async def generate_flow_from_chat(
 
     # Pattern matching for different workflow types
     if "code review" in message_lower or "code reviewer" in message_lower:
-        response_text = "Great! I'll create a code review workflow for you. This flow includes an Input node connected to a Code Reviewer agent with the Git Tool attached, followed by a Text Summarizer to summarize the review results."
+        response_text = "Great! I'll create a code review workflow for you. This flow includes a Code Reviewer agent with the Git Tool attached, followed by a Text Summarizer to summarize the review results."
 
         timestamp = int(datetime.utcnow().timestamp() * 1000)
         generated_flow = GeneratedFlow(
             nodes=[
-                {
-                    "id": f"input-{timestamp}",
-                    "kind": "input",
-                    "position": {"x": 100, "y": 200},
-                    "data": {"name": "Code Input"},
-                    "status": "draft"
-                },
                 {
                     "id": f"agent-{timestamp}-1",
                     "kind": "agent",
@@ -508,14 +501,14 @@ async def generate_flow_from_chat(
                         "name": "Code Reviewer",
                         "description": "Reviews code for best practices",
                         "env": {},
-                        "attachedToolIds": ["git-tool"]
+                        "attachedToolIds": ["ct9"]
                     },
                     "status": "draft"
                 },
                 {
                     "id": f"agent-{timestamp}-2",
                     "kind": "agent",
-                    "position": {"x": 500, "y": 200},
+                    "position": {"x": 550, "y": 200},
                     "data": {
                         "agentId": "ca1",
                         "name": "Text Summarizer",
@@ -524,19 +517,12 @@ async def generate_flow_from_chat(
                         "attachedToolIds": []
                     },
                     "status": "draft"
-                },
-                {
-                    "id": f"output-{timestamp}",
-                    "kind": "output",
-                    "position": {"x": 700, "y": 200},
-                    "data": {"name": "Review Summary"},
-                    "status": "draft"
                 }
             ],
             edges=[
                 {
                     "id": f"edge-{timestamp}-1",
-                    "source": f"input-{timestamp}",
+                    "source": "__INPUT__",
                     "target": f"agent-{timestamp}-1"
                 },
                 {
@@ -547,24 +533,17 @@ async def generate_flow_from_chat(
                 {
                     "id": f"edge-{timestamp}-3",
                     "source": f"agent-{timestamp}-2",
-                    "target": f"output-{timestamp}"
+                    "target": "__OUTPUT__"
                 }
             ],
             description="Code Review Workflow"
         )
     elif "data" in message_lower and ("analyze" in message_lower or "analysis" in message_lower):
-        response_text = "I'll set up a data analysis workflow. This includes an Input node, a Data Analyzer agent, and an output node to present the analysis results."
+        response_text = "I'll set up a data analysis workflow. This includes a Data Analyzer agent to analyze your data patterns."
 
         timestamp = int(datetime.utcnow().timestamp() * 1000)
         generated_flow = GeneratedFlow(
             nodes=[
-                {
-                    "id": f"input-{timestamp}",
-                    "kind": "input",
-                    "position": {"x": 100, "y": 200},
-                    "data": {"name": "Data Input"},
-                    "status": "draft"
-                },
                 {
                     "id": f"agent-{timestamp}",
                     "kind": "agent",
@@ -577,25 +556,18 @@ async def generate_flow_from_chat(
                         "attachedToolIds": []
                     },
                     "status": "draft"
-                },
-                {
-                    "id": f"output-{timestamp}",
-                    "kind": "output",
-                    "position": {"x": 600, "y": 200},
-                    "data": {"name": "Analysis Results"},
-                    "status": "draft"
                 }
             ],
             edges=[
                 {
                     "id": f"edge-{timestamp}-1",
-                    "source": f"input-{timestamp}",
+                    "source": "__INPUT__",
                     "target": f"agent-{timestamp}"
                 },
                 {
                     "id": f"edge-{timestamp}-2",
                     "source": f"agent-{timestamp}",
-                    "target": f"output-{timestamp}"
+                    "target": "__OUTPUT__"
                 }
             ],
             description="Data Analysis Workflow"
@@ -606,13 +578,6 @@ async def generate_flow_from_chat(
         timestamp = int(datetime.utcnow().timestamp() * 1000)
         generated_flow = GeneratedFlow(
             nodes=[
-                {
-                    "id": f"input-{timestamp}",
-                    "kind": "input",
-                    "position": {"x": 100, "y": 200},
-                    "data": {"name": "Text Input"},
-                    "status": "draft"
-                },
                 {
                     "id": f"agent-{timestamp}",
                     "kind": "agent",
@@ -625,25 +590,18 @@ async def generate_flow_from_chat(
                         "attachedToolIds": []
                     },
                     "status": "draft"
-                },
-                {
-                    "id": f"output-{timestamp}",
-                    "kind": "output",
-                    "position": {"x": 600, "y": 200},
-                    "data": {"name": "Translated Text"},
-                    "status": "draft"
                 }
             ],
             edges=[
                 {
                     "id": f"edge-{timestamp}-1",
-                    "source": f"input-{timestamp}",
+                    "source": "__INPUT__",
                     "target": f"agent-{timestamp}"
                 },
                 {
                     "id": f"edge-{timestamp}-2",
                     "source": f"agent-{timestamp}",
-                    "target": f"output-{timestamp}"
+                    "target": "__OUTPUT__"
                 }
             ],
             description="Translation Workflow"
@@ -654,13 +612,6 @@ async def generate_flow_from_chat(
         timestamp = int(datetime.utcnow().timestamp() * 1000)
         generated_flow = GeneratedFlow(
             nodes=[
-                {
-                    "id": f"input-{timestamp}",
-                    "kind": "input",
-                    "position": {"x": 100, "y": 200},
-                    "data": {"name": "Long Text"},
-                    "status": "draft"
-                },
                 {
                     "id": f"agent-{timestamp}",
                     "kind": "agent",
@@ -673,25 +624,18 @@ async def generate_flow_from_chat(
                         "attachedToolIds": []
                     },
                     "status": "draft"
-                },
-                {
-                    "id": f"output-{timestamp}",
-                    "kind": "output",
-                    "position": {"x": 600, "y": 200},
-                    "data": {"name": "Summary"},
-                    "status": "draft"
                 }
             ],
             edges=[
                 {
                     "id": f"edge-{timestamp}-1",
-                    "source": f"input-{timestamp}",
+                    "source": "__INPUT__",
                     "target": f"agent-{timestamp}"
                 },
                 {
                     "id": f"edge-{timestamp}-2",
                     "source": f"agent-{timestamp}",
-                    "target": f"output-{timestamp}"
+                    "target": "__OUTPUT__"
                 }
             ],
             description="Text Summarization Workflow"
