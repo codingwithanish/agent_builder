@@ -435,3 +435,278 @@ def _generate_dummy_json(schema: dict = None) -> dict:
         "data": ["item1", "item2", "item3"],
         "success": True,
     }
+
+
+# AI Chat endpoint for workflow generation
+
+from pydantic import BaseModel
+
+class ChatMessage(BaseModel):
+    id: str
+    role: str
+    content: str
+    timestamp: str
+
+class ChatRequest(BaseModel):
+    message: str
+    history: List[ChatMessage] = []
+
+class GeneratedFlow(BaseModel):
+    nodes: List[Dict]
+    edges: List[Dict]
+    description: str = None
+
+class ChatResponse(BaseModel):
+    response: ChatMessage
+    generatedFlow: GeneratedFlow = None
+
+
+@router.post("/api/chat/generate-flow", response_model=ChatResponse)
+async def generate_flow_from_chat(
+    request: ChatRequest,
+    app_mode: AppMode = Depends(get_app_mode),
+) -> ChatResponse:
+    """Generate workflow from chat message.
+
+    Args:
+        request: Chat request with message and history
+        app_mode: Application mode
+
+    Returns:
+        Chat response with optional generated flow
+    """
+    import asyncio
+    from datetime import datetime
+
+    # Simulate processing delay
+    await asyncio.sleep(1.0)
+
+    message_lower = request.message.lower()
+    response_text = ""
+    generated_flow = None
+
+    # Pattern matching for different workflow types
+    if "code review" in message_lower or "code reviewer" in message_lower:
+        response_text = "Great! I'll create a code review workflow for you. This flow includes an Input node connected to a Code Reviewer agent with the Git Tool attached, followed by a Text Summarizer to summarize the review results."
+
+        timestamp = int(datetime.utcnow().timestamp() * 1000)
+        generated_flow = GeneratedFlow(
+            nodes=[
+                {
+                    "id": f"input-{timestamp}",
+                    "kind": "input",
+                    "position": {"x": 100, "y": 200},
+                    "data": {"name": "Code Input"},
+                    "status": "draft"
+                },
+                {
+                    "id": f"agent-{timestamp}-1",
+                    "kind": "agent",
+                    "position": {"x": 300, "y": 200},
+                    "data": {
+                        "agentId": "ca5",
+                        "name": "Code Reviewer",
+                        "description": "Reviews code for best practices",
+                        "env": {},
+                        "attachedToolIds": ["git-tool"]
+                    },
+                    "status": "draft"
+                },
+                {
+                    "id": f"agent-{timestamp}-2",
+                    "kind": "agent",
+                    "position": {"x": 500, "y": 200},
+                    "data": {
+                        "agentId": "ca1",
+                        "name": "Text Summarizer",
+                        "description": "Summarizes the review",
+                        "env": {},
+                        "attachedToolIds": []
+                    },
+                    "status": "draft"
+                },
+                {
+                    "id": f"output-{timestamp}",
+                    "kind": "output",
+                    "position": {"x": 700, "y": 200},
+                    "data": {"name": "Review Summary"},
+                    "status": "draft"
+                }
+            ],
+            edges=[
+                {
+                    "id": f"edge-{timestamp}-1",
+                    "source": f"input-{timestamp}",
+                    "target": f"agent-{timestamp}-1"
+                },
+                {
+                    "id": f"edge-{timestamp}-2",
+                    "source": f"agent-{timestamp}-1",
+                    "target": f"agent-{timestamp}-2"
+                },
+                {
+                    "id": f"edge-{timestamp}-3",
+                    "source": f"agent-{timestamp}-2",
+                    "target": f"output-{timestamp}"
+                }
+            ],
+            description="Code Review Workflow"
+        )
+    elif "data" in message_lower and ("analyze" in message_lower or "analysis" in message_lower):
+        response_text = "I'll set up a data analysis workflow. This includes an Input node, a Data Analyzer agent, and an output node to present the analysis results."
+
+        timestamp = int(datetime.utcnow().timestamp() * 1000)
+        generated_flow = GeneratedFlow(
+            nodes=[
+                {
+                    "id": f"input-{timestamp}",
+                    "kind": "input",
+                    "position": {"x": 100, "y": 200},
+                    "data": {"name": "Data Input"},
+                    "status": "draft"
+                },
+                {
+                    "id": f"agent-{timestamp}",
+                    "kind": "agent",
+                    "position": {"x": 350, "y": 200},
+                    "data": {
+                        "agentId": "ca2",
+                        "name": "Data Analyzer",
+                        "description": "Analyzes data patterns",
+                        "env": {},
+                        "attachedToolIds": []
+                    },
+                    "status": "draft"
+                },
+                {
+                    "id": f"output-{timestamp}",
+                    "kind": "output",
+                    "position": {"x": 600, "y": 200},
+                    "data": {"name": "Analysis Results"},
+                    "status": "draft"
+                }
+            ],
+            edges=[
+                {
+                    "id": f"edge-{timestamp}-1",
+                    "source": f"input-{timestamp}",
+                    "target": f"agent-{timestamp}"
+                },
+                {
+                    "id": f"edge-{timestamp}-2",
+                    "source": f"agent-{timestamp}",
+                    "target": f"output-{timestamp}"
+                }
+            ],
+            description="Data Analysis Workflow"
+        )
+    elif "translate" in message_lower or "translation" in message_lower:
+        response_text = "I'll create a translation workflow using the Language Translator agent. This will take input text and translate it to your desired language."
+
+        timestamp = int(datetime.utcnow().timestamp() * 1000)
+        generated_flow = GeneratedFlow(
+            nodes=[
+                {
+                    "id": f"input-{timestamp}",
+                    "kind": "input",
+                    "position": {"x": 100, "y": 200},
+                    "data": {"name": "Text Input"},
+                    "status": "draft"
+                },
+                {
+                    "id": f"agent-{timestamp}",
+                    "kind": "agent",
+                    "position": {"x": 350, "y": 200},
+                    "data": {
+                        "agentId": "ca4",
+                        "name": "Language Translator",
+                        "description": "Translates text",
+                        "env": {},
+                        "attachedToolIds": []
+                    },
+                    "status": "draft"
+                },
+                {
+                    "id": f"output-{timestamp}",
+                    "kind": "output",
+                    "position": {"x": 600, "y": 200},
+                    "data": {"name": "Translated Text"},
+                    "status": "draft"
+                }
+            ],
+            edges=[
+                {
+                    "id": f"edge-{timestamp}-1",
+                    "source": f"input-{timestamp}",
+                    "target": f"agent-{timestamp}"
+                },
+                {
+                    "id": f"edge-{timestamp}-2",
+                    "source": f"agent-{timestamp}",
+                    "target": f"output-{timestamp}"
+                }
+            ],
+            description="Translation Workflow"
+        )
+    elif "summarize" in message_lower or "summary" in message_lower:
+        response_text = "I'll build a text summarization workflow. This uses the Text Summarizer agent to condense long content into key points."
+
+        timestamp = int(datetime.utcnow().timestamp() * 1000)
+        generated_flow = GeneratedFlow(
+            nodes=[
+                {
+                    "id": f"input-{timestamp}",
+                    "kind": "input",
+                    "position": {"x": 100, "y": 200},
+                    "data": {"name": "Long Text"},
+                    "status": "draft"
+                },
+                {
+                    "id": f"agent-{timestamp}",
+                    "kind": "agent",
+                    "position": {"x": 350, "y": 200},
+                    "data": {
+                        "agentId": "ca1",
+                        "name": "Text Summarizer",
+                        "description": "Summarizes content",
+                        "env": {},
+                        "attachedToolIds": []
+                    },
+                    "status": "draft"
+                },
+                {
+                    "id": f"output-{timestamp}",
+                    "kind": "output",
+                    "position": {"x": 600, "y": 200},
+                    "data": {"name": "Summary"},
+                    "status": "draft"
+                }
+            ],
+            edges=[
+                {
+                    "id": f"edge-{timestamp}-1",
+                    "source": f"input-{timestamp}",
+                    "target": f"agent-{timestamp}"
+                },
+                {
+                    "id": f"edge-{timestamp}-2",
+                    "source": f"agent-{timestamp}",
+                    "target": f"output-{timestamp}"
+                }
+            ],
+            description="Text Summarization Workflow"
+        )
+    else:
+        response_text = 'I understand you want to create an agentic workflow. Could you provide more details about what you\'d like to accomplish? For example:\n\n- "Create a code review workflow"\n- "Set up a data analysis pipeline"\n- "Build a translation workflow"\n- "Create a text summarization flow"\n\nYou can also browse the Catalogue tab to see available agents and tools that can be used in your workflow.'
+
+    assistant_message = ChatMessage(
+        id=f"msg-{int(datetime.utcnow().timestamp() * 1000)}",
+        role="assistant",
+        content=response_text,
+        timestamp=datetime.utcnow().isoformat()
+    )
+
+    return ChatResponse(
+        response=assistant_message,
+        generatedFlow=generated_flow
+    )

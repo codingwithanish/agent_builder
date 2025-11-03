@@ -1,5 +1,5 @@
 import type { ApiClient } from './ApiClient';
-import type { FlowGraph, LlmConfig, ResourceUpload, ToolOrAgentCard, RFNode, RFEdge, TestRun, TestStep } from '@/lib/types';
+import type { FlowGraph, LlmConfig, ResourceUpload, ToolOrAgentCard, RFNode, RFEdge, TestRun, TestStep, ChatMessage, GeneratedFlow } from '@/lib/types';
 
 export class DummyApiClient implements ApiClient {
   private flows: FlowGraph[] = [];
@@ -361,14 +361,246 @@ export class DummyApiClient implements ApiClient {
 
   async addMarketItemToCatalog(id: string, kind: 'agent'|'tool'): Promise<void> {
     await this.randomDelay();
-    
+
     const marketItems = kind === 'agent' ? this.marketAgents : this.marketTools;
     const catalogItems = kind === 'agent' ? this.catalogAgents : this.catalogTools;
-    
+
     const item = marketItems.find(i => i.id === id);
     if (item && !catalogItems.find(c => c.id === id)) {
       catalogItems.push({ ...item, status: 'draft' });
       this.saveToStorage();
     }
+  }
+
+  async sendChatMessage(message: string, history: ChatMessage[]): Promise<{ response: ChatMessage; generatedFlow?: GeneratedFlow }> {
+    await this.wait(1000 + Math.random() * 1500);
+
+    const lowerMessage = message.toLowerCase();
+    let responseText = '';
+    let generatedFlow: GeneratedFlow | undefined;
+
+    // Pattern matching for different types of requests
+    if (lowerMessage.includes('code review') || lowerMessage.includes('code reviewer')) {
+      responseText = 'Great! I\'ll create a code review workflow for you. This flow includes an Input node connected to a Code Reviewer agent with the Git Tool attached, followed by a Text Summarizer to summarize the review results.';
+
+      generatedFlow = {
+        nodes: [
+          {
+            id: `input-${Date.now()}`,
+            kind: 'input',
+            position: { x: 100, y: 200 },
+            data: { name: 'Code Input' },
+            status: 'draft'
+          },
+          {
+            id: `agent-${Date.now()}-1`,
+            kind: 'agent',
+            position: { x: 300, y: 200 },
+            data: {
+              agentId: 'ca5',
+              name: 'Code Reviewer',
+              description: 'Reviews code for best practices',
+              env: {},
+              attachedToolIds: ['git-tool']
+            },
+            status: 'draft'
+          },
+          {
+            id: `agent-${Date.now()}-2`,
+            kind: 'agent',
+            position: { x: 500, y: 200 },
+            data: {
+              agentId: 'ca1',
+              name: 'Text Summarizer',
+              description: 'Summarizes the review',
+              env: {},
+              attachedToolIds: []
+            },
+            status: 'draft'
+          },
+          {
+            id: `output-${Date.now()}`,
+            kind: 'output',
+            position: { x: 700, y: 200 },
+            data: { name: 'Review Summary' },
+            status: 'draft'
+          }
+        ],
+        edges: [
+          {
+            id: `edge-${Date.now()}-1`,
+            source: `input-${Date.now()}`,
+            target: `agent-${Date.now()}-1`
+          },
+          {
+            id: `edge-${Date.now()}-2`,
+            source: `agent-${Date.now()}-1`,
+            target: `agent-${Date.now()}-2`
+          },
+          {
+            id: `edge-${Date.now()}-3`,
+            source: `agent-${Date.now()}-2`,
+            target: `output-${Date.now()}`
+          }
+        ],
+        description: 'Code Review Workflow'
+      };
+    } else if (lowerMessage.includes('data') && (lowerMessage.includes('analyze') || lowerMessage.includes('analysis'))) {
+      responseText = 'I\'ll set up a data analysis workflow. This includes an Input node, a Data Analyzer agent, and an output node to present the analysis results.';
+
+      generatedFlow = {
+        nodes: [
+          {
+            id: `input-${Date.now()}`,
+            kind: 'input',
+            position: { x: 100, y: 200 },
+            data: { name: 'Data Input' },
+            status: 'draft'
+          },
+          {
+            id: `agent-${Date.now()}`,
+            kind: 'agent',
+            position: { x: 350, y: 200 },
+            data: {
+              agentId: 'ca2',
+              name: 'Data Analyzer',
+              description: 'Analyzes data patterns',
+              env: {},
+              attachedToolIds: []
+            },
+            status: 'draft'
+          },
+          {
+            id: `output-${Date.now()}`,
+            kind: 'output',
+            position: { x: 600, y: 200 },
+            data: { name: 'Analysis Results' },
+            status: 'draft'
+          }
+        ],
+        edges: [
+          {
+            id: `edge-${Date.now()}-1`,
+            source: `input-${Date.now()}`,
+            target: `agent-${Date.now()}`
+          },
+          {
+            id: `edge-${Date.now()}-2`,
+            source: `agent-${Date.now()}`,
+            target: `output-${Date.now()}`
+          }
+        ],
+        description: 'Data Analysis Workflow'
+      };
+    } else if (lowerMessage.includes('translate') || lowerMessage.includes('translation')) {
+      responseText = 'I\'ll create a translation workflow using the Language Translator agent. This will take input text and translate it to your desired language.';
+
+      generatedFlow = {
+        nodes: [
+          {
+            id: `input-${Date.now()}`,
+            kind: 'input',
+            position: { x: 100, y: 200 },
+            data: { name: 'Text Input' },
+            status: 'draft'
+          },
+          {
+            id: `agent-${Date.now()}`,
+            kind: 'agent',
+            position: { x: 350, y: 200 },
+            data: {
+              agentId: 'ca4',
+              name: 'Language Translator',
+              description: 'Translates text',
+              env: {},
+              attachedToolIds: []
+            },
+            status: 'draft'
+          },
+          {
+            id: `output-${Date.now()}`,
+            kind: 'output',
+            position: { x: 600, y: 200 },
+            data: { name: 'Translated Text' },
+            status: 'draft'
+          }
+        ],
+        edges: [
+          {
+            id: `edge-${Date.now()}-1`,
+            source: `input-${Date.now()}`,
+            target: `agent-${Date.now()}`
+          },
+          {
+            id: `edge-${Date.now()}-2`,
+            source: `agent-${Date.now()}`,
+            target: `output-${Date.now()}`
+          }
+        ],
+        description: 'Translation Workflow'
+      };
+    } else if (lowerMessage.includes('summarize') || lowerMessage.includes('summary')) {
+      responseText = 'I\'ll build a text summarization workflow. This uses the Text Summarizer agent to condense long content into key points.';
+
+      generatedFlow = {
+        nodes: [
+          {
+            id: `input-${Date.now()}`,
+            kind: 'input',
+            position: { x: 100, y: 200 },
+            data: { name: 'Long Text' },
+            status: 'draft'
+          },
+          {
+            id: `agent-${Date.now()}`,
+            kind: 'agent',
+            position: { x: 350, y: 200 },
+            data: {
+              agentId: 'ca1',
+              name: 'Text Summarizer',
+              description: 'Summarizes content',
+              env: {},
+              attachedToolIds: []
+            },
+            status: 'draft'
+          },
+          {
+            id: `output-${Date.now()}`,
+            kind: 'output',
+            position: { x: 600, y: 200 },
+            data: { name: 'Summary' },
+            status: 'draft'
+          }
+        ],
+        edges: [
+          {
+            id: `edge-${Date.now()}-1`,
+            source: `input-${Date.now()}`,
+            target: `agent-${Date.now()}`
+          },
+          {
+            id: `edge-${Date.now()}-2`,
+            source: `agent-${Date.now()}`,
+            target: `output-${Date.now()}`
+          }
+        ],
+        description: 'Text Summarization Workflow'
+      };
+    } else {
+      // Default response for unrecognized patterns
+      responseText = 'I understand you want to create an agentic workflow. Could you provide more details about what you\'d like to accomplish? For example:\n\n- "Create a code review workflow"\n- "Set up a data analysis pipeline"\n- "Build a translation workflow"\n- "Create a text summarization flow"\n\nYou can also browse the Catalogue tab to see available agents and tools that can be used in your workflow.';
+    }
+
+    const assistantMessage: ChatMessage = {
+      id: `msg-${Date.now()}`,
+      role: 'assistant',
+      content: responseText,
+      timestamp: new Date().toISOString()
+    };
+
+    return {
+      response: assistantMessage,
+      generatedFlow
+    };
   }
 }

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Your One-Stop Electronics Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .cart-icon {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .cart-icon:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .search-bar {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .search-bar input {
+            width: 60%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .search-bar button {
+            padding: 15px 30px;
+            margin-left: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .search-bar button:hover {
+            background: #5568d3;
+        }
+
+        .category-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .category-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 3rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+
+        .product-description {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .product-price {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stock-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .in-stock {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .low-stock {
+            background: #fef5e7;
+            color: #975a16;
+        }
+
+        .out-of-stock {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .add-to-cart:hover {
+            background: #5568d3;
+        }
+
+        .add-to-cart:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .stars {
+            color: #f6ad55;
+        }
+
+        .reviews {
+            color: #718096;
+            font-size: 0.85rem;
+        }
+
+        footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .banner {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .banner h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">TechStore</div>
+                <div class="cart-icon">
+                    🛒 Cart (0)
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="search-bar">
+            <input type="text" placeholder="Search for products..." id="searchInput">
+            <button onclick="searchProducts()">Search</button>
+        </div>
+
+        <div class="banner">
+            <h2>Summer Sale - Up to 50% Off!</h2>
+            <p>Free shipping on orders over $50</p>
+        </div>
+
+        <div class="category-nav">
+            <button class="category-btn">All Products</button>
+            <button class="category-btn">Laptops</button>
+            <button class="category-btn">Smartphones</button>
+            <button class="category-btn">Accessories</button>
+            <button class="category-btn">Audio</button>
+        </div>
+
+        <div class="products-grid">
+            <!-- Product 1 -->
+            <div class="product-card" data-product-id="PROD001">
+                <div class="product-image">💻</div>
+                <div class="product-title">MacBook Pro 16"</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                    <span class="reviews">(234 reviews)</span>
+                </div>
+                <div class="product-description">
+                    M2 Pro chip, 16GB RAM, 512GB SSD. Perfect for professionals and creators.
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">$2,499</div>
+                    <span class="stock-badge in-stock">In Stock</span>
+                </div>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-card" data-product-id="PROD002">
+                <div class="product-image">📱</div>
+                <div class="product-title">iPhone 15 Pro</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                    <span class="reviews">(567 reviews)</span>
+                </div>
+                <div class="product-description">
+                    A17 Pro chip, 256GB storage, Titanium design with ProMotion display.
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">$999</div>
+                    <span class="stock-badge in-stock">In Stock</span>
+                </div>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-card" data-product-id="PROD003">
+                <div class="product-image">🎧</div>
+                <div class="product-title">AirPods Pro (2nd Gen)</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                    <span class="reviews">(892 reviews)</span>
+                </div>
+                <div class="product-description">
+                    Active noise cancellation, adaptive transparency, personalized spatial audio.
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">$249</div>
+                    <span class="stock-badge in-stock">In Stock</span>
+                </div>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+
+            <!-- Product 4 -->
+            <div class="product-card" data-product-id="PROD004">
+                <div class="product-image">⌨️</div>
+                <div class="product-title">Magic Keyboard</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span class="reviews">(445 reviews)</span>
+                </div>
+                <div class="product-description">
+                    Wireless, rechargeable with numeric keypad. Works seamlessly with Mac.
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">$129</div>
+                    <span class="stock-badge low-stock">Low Stock</span>
+                </div>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+
+            <!-- Product 5 -->
+            <div class="product-card" data-product-id="PROD005">
+                <div class="product-image">🖱️</div>
+                <div class="product-title">Magic Mouse</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span class="reviews">(312 reviews)</span>
+                </div>
+                <div class="product-description">
+                    Multi-Touch surface, rechargeable battery, optimized foot design.
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">$79</div>
+                    <span class="stock-badge in-stock">In Stock</span>
+                </div>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+
+            <!-- Product 6 -->
+            <div class="product-card" data-product-id="PROD006">
+                <div class="product-image">⌚</div>
+                <div class="product-title">Apple Watch Series 9</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                    <span class="reviews">(678 reviews)</span>
+                </div>
+                <div class="product-description">
+                    Advanced health features, always-on display, carbon neutral options.
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">$399</div>
+                    <span class="stock-badge in-stock">In Stock</span>
+                </div>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+
+            <!-- Product 7 -->
+            <div class="product-card" data-product-id="PROD007">
+                <div class="product-image">📷</div>
+                <div class="product-title">Sony A7 IV Camera</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                    <span class="reviews">(423 reviews)</span>
+                </div>
+                <div class="product-description">
+                    33MP full-frame sensor, 4K 60fps video, real-time eye AF.
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">$2,499</div>
+                    <span class="stock-badge low-stock">Low Stock</span>
+                </div>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+
+            <!-- Product 8 -->
+            <div class="product-card" data-product-id="PROD008">
+                <div class="product-image">🔊</div>
+                <div class="product-title">HomePod (2nd Gen)</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span class="reviews">(267 reviews)</span>
+                </div>
+                <div class="product-description">
+                    Room-filling sound, smart home hub, spatial audio with Dolby Atmos.
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">$299</div>
+                    <span class="stock-badge in-stock">In Stock</span>
+                </div>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+
+            <!-- Product 9 -->
+            <div class="product-card" data-product-id="PROD009">
+                <div class="product-image">💽</div>
+                <div class="product-title">Samsung T7 SSD 1TB</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                    <span class="reviews">(1,234 reviews)</span>
+                </div>
+                <div class="product-description">
+                    Portable external SSD, up to 1,050MB/s, password protection.
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">$129</div>
+                    <span class="stock-badge in-stock">In Stock</span>
+                </div>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+
+            <!-- Product 10 -->
+            <div class="product-card" data-product-id="PROD010">
+                <div class="product-image">🖥️</div>
+                <div class="product-title">Dell UltraSharp 27" Monitor</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐</span>
+                    <span class="reviews">(512 reviews)</span>
+                </div>
+                <div class="product-description">
+                    4K UHD, 99% sRGB color coverage, USB-C connectivity with 90W power.
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">$549</div>
+                    <span class="stock-badge in-stock">In Stock</span>
+                </div>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+
+            <!-- Product 11 -->
+            <div class="product-card" data-product-id="PROD011">
+                <div class="product-image">🎮</div>
+                <div class="product-title">PlayStation 5</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                    <span class="reviews">(2,345 reviews)</span>
+                </div>
+                <div class="product-description">
+                    825GB SSD, ray tracing, 4K gaming at 120fps, DualSense controller.
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">$499</div>
+                    <span class="stock-badge out-of-stock">Out of Stock</span>
+                </div>
+                <button class="add-to-cart" disabled>Out of Stock</button>
+            </div>
+
+            <!-- Product 12 -->
+            <div class="product-card" data-product-id="PROD012">
+                <div class="product-image">🔌</div>
+                <div class="product-title">Anker 737 Power Bank</div>
+                <div class="rating">
+                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                    <span class="reviews">(789 reviews)</span>
+                </div>
+                <div class="product-description">
+                    24,000mAh capacity, 140W output, charges 3 devices simultaneously.
+                </div>
+                <div class="product-footer">
+                    <div class="product-price">$149</div>
+                    <span class="stock-badge in-stock">In Stock</span>
+                </div>
+                <button class="add-to-cart">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 TechStore. All rights reserved.</p>
+            <p style="margin-top: 10px;">Free shipping on orders over $50 | 30-day return policy | 24/7 customer support</p>
+        </div>
+    </footer>
+
+    <script>
+        function searchProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const products = document.querySelectorAll('.product-card');
+
+            products.forEach(product => {
+                const title = product.querySelector('.product-title').textContent.toLowerCase();
+                const description = product.querySelector('.product-description').textContent.toLowerCase();
+
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    product.style.display = 'block';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        }
+
+        // Add to cart functionality
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!this.disabled) {
+                    const productCard = this.closest('.product-card');
+                    const productName = productCard.querySelector('.product-title').textContent;
+                    alert(`Added "${productName}" to cart!`);
+                }
+            });
+        });
+
+        // Search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchProducts();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 import type { ApiClient } from './ApiClient';
-import type { FlowGraph, LlmConfig, ResourceUpload, ToolOrAgentCard } from '@/lib/types';
+import type { FlowGraph, LlmConfig, ResourceUpload, ToolOrAgentCard, ChatMessage, GeneratedFlow } from '@/lib/types';
 
 export class RealApiClient implements ApiClient {
   private baseUrl: string;
@@ -115,6 +115,13 @@ export class RealApiClient implements ApiClient {
     await this.request(`/market/${id}/add`, {
       method: 'POST',
       body: JSON.stringify({ kind }),
+    });
+  }
+
+  async sendChatMessage(message: string, history: ChatMessage[]): Promise<{ response: ChatMessage; generatedFlow?: GeneratedFlow }> {
+    return this.request<{ response: ChatMessage; generatedFlow?: GeneratedFlow }>('/ai-chat', {
+      method: 'POST',
+      body: JSON.stringify({ message, history }),
     });
   }
 }

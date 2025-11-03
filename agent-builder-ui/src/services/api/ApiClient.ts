@@ -1,4 +1,4 @@
-import type { FlowGraph, LlmConfig, ResourceUpload, ToolOrAgentCard, TestRun } from '@/lib/types';
+import type { FlowGraph, LlmConfig, ResourceUpload, ToolOrAgentCard, TestRun, ChatMessage, GeneratedFlow } from '@/lib/types';
 
 export interface ApiClient {
   // Flows
@@ -23,4 +23,7 @@ export interface ApiClient {
   listMarketAgents(): Promise<ToolOrAgentCard[]>;
   listMarketTools(): Promise<ToolOrAgentCard[]>;
   addMarketItemToCatalog(id: string, kind: 'agent'|'tool'): Promise<void>;
+
+  // AI Chat
+  sendChatMessage(message: string, history: ChatMessage[]): Promise<{ response: ChatMessage; generatedFlow?: GeneratedFlow }>;
 }

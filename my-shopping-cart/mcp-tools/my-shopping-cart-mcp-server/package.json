@@ -1,0 +1,23 @@
+{
+  "name": "my-shopping-cart-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for shopping cart operations - product search, details, and order management",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "shopping-cart",
+    "ecommerce",
+    "products",
+    "orders"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0"
+  }
+}

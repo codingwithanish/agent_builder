@@ -3,7 +3,7 @@ import { create } from 'zustand';
 interface PanelState {
   // Right panel visibility and active tab
   rightPanelVisible: boolean;
-  activeRightTab: 'catalogue' | 'marketplace';
+  activeRightTab: 'catalogue' | 'marketplace' | 'ai-chat';
   activeCatalogueTab: 'agents' | 'tools' | 'flows' | 'logical';
   activeMarketplaceTab: 'tools' | 'agents';
 
@@ -13,7 +13,7 @@ interface PanelState {
 
   // Actions
   setRightPanelVisible: (visible: boolean) => void;
-  setActiveRightTab: (tab: 'catalogue' | 'marketplace') => void;
+  setActiveRightTab: (tab: 'catalogue' | 'marketplace' | 'ai-chat') => void;
   setActiveCatalogueTab: (tab: 'agents' | 'tools' | 'flows' | 'logical') => void;
   setActiveMarketplaceTab: (tab: 'tools' | 'agents') => void;
   openDrawer: (drawer: 'agent' | 'agentFlow' | 'tool' | 'condition' | 'human', nodeId: string) => void;

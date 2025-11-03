@@ -1,0 +1,377 @@
+import { useState } from 'react';
+import { useToastStore } from '../../state/toastStore';
+
+interface EmbeddedScriptsTabProps {
+  flowId: string;
+  flowName: string;
+}
+
+export function EmbeddedScriptsTab({ flowId, flowName }: EmbeddedScriptsTabProps) {
+  const [copied, setCopied] = useState(false);
+  const { showSuccess } = useToastStore();
+
+  // Get API base URL from environment or use default
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+
+  // Generate the embed script
+  const embedScript = `<!-- Agent Builder Chat Widget -->
+<div id="agent-builder-chat-${flowId}"></div>
+<script>
+  (function() {
+    // Configuration
+    const config = {
+      flowId: '${flowId}',
+      flowName: '${flowName}',
+      apiUrl: '${apiBaseUrl}',
+      containerId: 'agent-builder-chat-${flowId}',
+      position: 'bottom-right', // bottom-right, bottom-left, top-right, top-left
+      theme: {
+        primaryColor: '#3b82f6',
+        headerBg: '#1e40af',
+        headerText: '#ffffff',
+        userMsgBg: '#3b82f6',
+        botMsgBg: '#f3f4f6',
+      }
+    };
+
+    // Create chat widget
+    function createChatWidget() {
+      const container = document.getElementById(config.containerId);
+      if (!container) {
+        console.error('Agent Builder: Container not found');
+        return;
+      }
+
+      // Create widget structure
+      const widget = document.createElement('div');
+      widget.className = 'agent-builder-widget';
+      widget.innerHTML = \`
+        <style>
+          .agent-builder-widget {
+            position: fixed;
+            \${config.position.includes('bottom') ? 'bottom: 20px;' : 'top: 20px;'}
+            \${config.position.includes('right') ? 'right: 20px;' : 'left: 20px;'}
+            width: 380px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            z-index: 999999;
+            transition: all 0.3s ease;
+          }
+          .agent-builder-widget.minimized {
+            height: 60px;
+            width: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+          }
+          .agent-builder-header {
+            background: \${config.theme.headerBg};
+            color: \${config.theme.headerText};
+            padding: 16px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+          }
+          .agent-builder-minimize-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .agent-builder-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+          }
+          .agent-builder-message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            word-wrap: break-word;
+          }
+          .agent-builder-message.user {
+            align-self: flex-end;
+            background: \${config.theme.userMsgBg};
+            color: white;
+          }
+          .agent-builder-message.bot {
+            align-self: flex-start;
+            background: \${config.theme.botMsgBg};
+            color: #1f2937;
+          }
+          .agent-builder-input-container {
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 8px;
+          }
+          .agent-builder-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+          }
+          .agent-builder-input:focus {
+            border-color: \${config.theme.primaryColor};
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+          }
+          .agent-builder-send-btn {
+            padding: 10px 16px;
+            background: \${config.theme.primaryColor};
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+          }
+          .agent-builder-send-btn:hover {
+            background: #2563eb;
+          }
+          .agent-builder-send-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+          }
+          .agent-builder-toggle-btn {
+            position: fixed;
+            \${config.position.includes('bottom') ? 'bottom: 20px;' : 'top: 20px;'}
+            \${config.position.includes('right') ? 'right: 20px;' : 'left: 20px;'}
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: \${config.theme.primaryColor};
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 999999;
+          }
+          .agent-builder-toggle-btn.show {
+            display: flex;
+          }
+        </style>
+
+        <div id="agent-builder-chat-widget">
+          <div class="agent-builder-header">
+            <span>\${config.flowName}</span>
+            <button class="agent-builder-minimize-btn" id="minimize-btn">−</button>
+          </div>
+          <div class="agent-builder-messages" id="messages-container">
+            <div class="agent-builder-message bot">
+              Hi! I'm your AI assistant. How can I help you today?
+            </div>
+          </div>
+          <div class="agent-builder-input-container">
+            <input
+              type="text"
+              class="agent-builder-input"
+              id="message-input"
+              placeholder="Type your message..."
+            />
+            <button class="agent-builder-send-btn" id="send-btn">Send</button>
+          </div>
+        </div>
+        <button class="agent-builder-toggle-btn" id="toggle-btn">💬</button>
+      \`;
+
+      container.appendChild(widget);
+
+      // Get elements
+      const chatWidget = widget.querySelector('#agent-builder-chat-widget');
+      const toggleBtn = widget.querySelector('#toggle-btn');
+      const minimizeBtn = widget.querySelector('#minimize-btn');
+      const messagesContainer = widget.querySelector('#messages-container');
+      const messageInput = widget.querySelector('#message-input');
+      const sendBtn = widget.querySelector('#send-btn');
+
+      let isMinimized = false;
+
+      // Toggle chat visibility
+      function toggleChat() {
+        isMinimized = !isMinimized;
+        if (isMinimized) {
+          chatWidget.style.display = 'none';
+          toggleBtn.classList.add('show');
+        } else {
+          chatWidget.style.display = 'flex';
+          toggleBtn.classList.remove('show');
+          messageInput.focus();
+        }
+      }
+
+      minimizeBtn.addEventListener('click', toggleChat);
+      toggleBtn.addEventListener('click', toggleChat);
+
+      // Add message to UI
+      function addMessage(text, isUser) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = \`agent-builder-message \${isUser ? 'user' : 'bot'}\`;
+        messageDiv.textContent = text;
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+
+      // Send message to API
+      async function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message) return;
+
+        // Add user message to UI
+        addMessage(message, true);
+        messageInput.value = '';
+        sendBtn.disabled = true;
+
+        try {
+          // Call the agent invoke API
+          const response = await fetch(\`\${config.apiUrl}/flows/\${config.flowId}/invoke\`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              message: message,
+              conversationId: getConversationId(),
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to get response from agent');
+          }
+
+          const data = await response.json();
+
+          // Add bot response to UI
+          addMessage(data.response || data.message || 'Sorry, I could not process that.', false);
+        } catch (error) {
+          console.error('Agent Builder Error:', error);
+          addMessage('Sorry, there was an error processing your request.', false);
+        } finally {
+          sendBtn.disabled = false;
+          messageInput.focus();
+        }
+      }
+
+      // Get or create conversation ID
+      function getConversationId() {
+        let conversationId = sessionStorage.getItem('agent-builder-conversation-id');
+        if (!conversationId) {
+          conversationId = 'conv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+          sessionStorage.setItem('agent-builder-conversation-id', conversationId);
+        }
+        return conversationId;
+      }
+
+      // Event listeners
+      sendBtn.addEventListener('click', sendMessage);
+      messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          sendMessage();
+        }
+      });
+
+      // Focus input on load
+      messageInput.focus();
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', createChatWidget);
+    } else {
+      createChatWidget();
+    }
+  })();
+</script>`;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(embedScript);
+      setCopied(true);
+      showSuccess('Copied!', 'Embed script copied to clipboard');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          Embed Script
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Copy and paste this code into your website to add the chat widget.
+          The widget will appear as a floating chat button on your page.
+        </p>
+      </div>
+
+      <div className="relative">
+        <textarea
+          readOnly
+          value={embedScript}
+          className="w-full h-96 p-4 font-mono text-xs bg-gray-50 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+          style={{ fontFamily: 'monospace' }}
+        />
+        <button
+          onClick={handleCopy}
+          className={`absolute top-4 right-4 px-4 py-2 rounded-md font-medium transition-colors ${
+            copied
+              ? 'bg-green-600 text-white'
+              : 'bg-blue-600 text-white hover:bg-blue-700'
+          }`}
+        >
+          {copied ? (
+            <>
+              <span className="mr-2">✓</span>
+              Copied
+            </>
+          ) : (
+            'Copy Code'
+          )}
+        </button>
+      </div>
+
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h4 className="font-semibold text-blue-900 mb-2">How to use:</h4>
+        <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+          <li>Copy the embed script above</li>
+          <li>Paste it into your website's HTML, preferably before the closing <code>&lt;/body&gt;</code> tag</li>
+          <li>The chat widget will automatically appear on your page</li>
+          <li>Users can click the chat button to start a conversation with your agent</li>
+        </ol>
+      </div>
+
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <h4 className="font-semibold text-yellow-900 mb-2">Important Notes:</h4>
+        <ul className="text-sm text-yellow-800 space-y-1 list-disc list-inside">
+          <li>Make sure your API endpoint (<code>{apiBaseUrl}</code>) is accessible from your website</li>
+          <li>The chat widget uses the <code>/flows/{flowId}/invoke</code> API endpoint</li>
+          <li>You can customize the widget's position and colors by editing the configuration in the script</li>
+          <li>Conversation history is stored in the browser's sessionStorage</li>
+        </ul>
+      </div>
+    </div>
+  );
+}

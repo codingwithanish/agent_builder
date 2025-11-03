@@ -128,3 +128,17 @@ export interface TestRun {
   startTime: string;
   endTime?: string;
 }
+
+// AI Chat types
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
+export interface GeneratedFlow {
+  nodes: RFNode[];
+  edges: RFEdge[];
+  description?: string;
+}

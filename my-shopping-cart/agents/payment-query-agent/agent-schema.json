@@ -1,0 +1,135 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Payment Query Agent API",
+    "description": "API for checking payment status and retrieving payment details for orders",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/check-payment-status": {
+      "post": {
+        "summary": "Check Payment Status",
+        "description": "Checks the payment status of an order by order ID, customer name, or email",
+        "operationId": "checkPaymentStatus",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "string",
+                    "description": "The order ID (e.g., ORD-2024-001)"
+                  },
+                  "customerName": {
+                    "type": "string",
+                    "description": "Customer's full name"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Customer's email address"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment status information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ordersFound": {
+                      "type": "integer",
+                      "description": "Number of orders found"
+                    },
+                    "response": {
+                      "type": "string",
+                      "description": "Formatted response with payment details"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-payment-details": {
+      "post": {
+        "summary": "Get Payment Details",
+        "description": "Retrieves detailed payment information for a specific order",
+        "operationId": "getPaymentDetails",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["orderId"],
+                "properties": {
+                  "orderId": {
+                    "type": "string",
+                    "description": "The order ID (e.g., ORD-2024-001)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Detailed payment information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "orderId": {
+                      "type": "string"
+                    },
+                    "customerName": {
+                      "type": "string"
+                    },
+                    "total": {
+                      "type": "number"
+                    },
+                    "paymentStatus": {
+                      "type": "string",
+                      "enum": ["Paid", "Pending", "Refunded"]
+                    },
+                    "paymentMethod": {
+                      "type": "string"
+                    },
+                    "paidAmount": {
+                      "type": "number"
+                    },
+                    "paidDate": {
+                      "type": "string"
+                    },
+                    "transactionId": {
+                      "type": "string"
+                    },
+                    "refundStatus": {
+                      "type": "string"
+                    },
+                    "refundAmount": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

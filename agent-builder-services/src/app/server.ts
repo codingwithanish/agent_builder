@@ -26,6 +26,7 @@ import { DeploymentService } from '@/application/services/deploymentService';
 // Controllers
 import { FlowController } from '@/presentation/controllers/flowController';
 import { LlmController } from '@/presentation/controllers/llmController';
+import { AIChatController } from '@/presentation/controllers/aiChatController';
 
 export class Server {
   private app: express.Application;
@@ -99,11 +100,13 @@ export class Server {
     // Controllers
     const flowController = new FlowController(flowService, deploymentService);
     const llmController = new LlmController(llmService);
+    const aiChatController = new AIChatController();
 
     // Routes
     const routes = createRoutes({
       flowController,
-      llmController
+      llmController,
+      aiChatController
     });
 
     this.app.use('/', routes);

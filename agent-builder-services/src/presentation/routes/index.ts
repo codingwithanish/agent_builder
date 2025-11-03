@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import { FlowController } from '../controllers/flowController';
 import { LlmController } from '../controllers/llmController';
+import { AIChatController } from '../controllers/aiChatController';
 
 export function createRoutes(dependencies: {
   flowController: FlowController;
   llmController: LlmController;
+  aiChatController: AIChatController;
 }): Router {
   const router = Router();
 
@@ -50,6 +52,9 @@ export function createRoutes(dependencies: {
   router.post('/llms', dependencies.llmController.createLlm.bind(dependencies.llmController));
   router.post('/llm/test', dependencies.llmController.testLlm.bind(dependencies.llmController));
   router.delete('/llms/:id', dependencies.llmController.deleteLlm.bind(dependencies.llmController));
+
+  // AI Chat routes
+  router.post('/ai-chat', dependencies.aiChatController.sendMessage.bind(dependencies.aiChatController));
 
   // Catalog routes (simplified implementation)
   router.get('/catalog/:type', (req, res) => {

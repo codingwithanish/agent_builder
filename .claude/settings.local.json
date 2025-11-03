@@ -19,7 +19,10 @@
       "Bash(docker build:*)",
       "Bash(chmod:*)",
       "Bash(docker-compose config:*)",
-      "Bash(docker:*)"
+      "Bash(docker:*)",
+      "Bash(tree -L 3 \"D:\\Workspace\\agent_builder\\agent-builder-ui\\src\" -I node_modules)",
+      "Bash(tree -L 3 \"D:\\Workspace\\agent_builder\\my-shopping-cart\" -I node_modules)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []

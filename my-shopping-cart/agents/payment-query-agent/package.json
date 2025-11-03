@@ -1,0 +1,23 @@
+{
+  "name": "payment-query-agent",
+  "version": "1.0.0",
+  "description": "Agent for handling payment-related queries and order payment status",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node src/test.js"
+  },
+  "keywords": [
+    "agent",
+    "payment",
+    "orders",
+    "query"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.20.0"
+  }
+}

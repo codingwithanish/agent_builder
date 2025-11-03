@@ -1,0 +1,219 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "General Query Agent API",
+    "description": "API for searching products, checking stock, and getting product information",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/search-products": {
+      "post": {
+        "summary": "Search Products",
+        "description": "Search for products by keywords, category, price range, or features",
+        "operationId": "searchProducts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Search keywords (product name, description, features)"
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Product category (Laptops, Smartphones, Audio, Accessories, etc.)"
+                  },
+                  "minPrice": {
+                    "type": "number",
+                    "description": "Minimum price filter"
+                  },
+                  "maxPrice": {
+                    "type": "number",
+                    "description": "Maximum price filter"
+                  },
+                  "inStockOnly": {
+                    "type": "string",
+                    "enum": ["true", "false"],
+                    "description": "Filter to show only in-stock products"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of matching products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "productsFound": {
+                      "type": "integer"
+                    },
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "price": {"type": "number"},
+                          "stock": {"type": "integer"}
+                        }
+                      }
+                    },
+                    "response": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-product-info": {
+      "post": {
+        "summary": "Get Product Information",
+        "description": "Get detailed information about a specific product",
+        "operationId": "getProductInfo",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["productId"],
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "description": "Product ID (e.g., PROD001)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Detailed product information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "product": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string"},
+                        "name": {"type": "string"},
+                        "category": {"type": "string"},
+                        "price": {"type": "number"},
+                        "stock": {"type": "integer"},
+                        "rating": {"type": "number"},
+                        "description": {"type": "string"}
+                      }
+                    },
+                    "response": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/check-stock": {
+      "post": {
+        "summary": "Check Stock Availability",
+        "description": "Check if a product is in stock and get availability details",
+        "operationId": "checkStock",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["productId"],
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "description": "Product ID to check stock for"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stock availability information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "productId": {"type": "string"},
+                    "productName": {"type": "string"},
+                    "inStock": {"type": "boolean"},
+                    "stockQuantity": {"type": "integer"},
+                    "message": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/compare-products": {
+      "post": {
+        "summary": "Compare Products",
+        "description": "Compare multiple products side-by-side",
+        "operationId": "compareProducts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["productIds"],
+                "properties": {
+                  "productIds": {
+                    "type": "string",
+                    "description": "Comma-separated list of product IDs (e.g., 'PROD001,PROD002,PROD003')"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product comparison",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "productsCompared": {"type": "integer"},
+                    "comparison": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
