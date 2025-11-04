@@ -55,7 +55,7 @@ export function AgentNode({ data, id }: { data: any; id: string }) {
             </div>
           )}
         </div>
-        
+
         {/* Footer */}
         <div className="flex justify-between items-center pt-2 border-t border-gray-100">
           <span className="text-xs text-gray-500 font-medium">Status</span>

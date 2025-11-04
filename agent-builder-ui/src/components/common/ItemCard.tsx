@@ -64,11 +64,6 @@ export function ItemCard({ item, source }: ItemCardProps) {
                 {item.description}
               </p>
             )}
-            {item.status && source === 'catalogue' && (
-              <div className="mt-2">
-                <StatusPill status={item.status} />
-              </div>
-            )}
           </div>
         </div>
       </div>

@@ -19,6 +19,8 @@ export interface RFEdge {
   target: string; // node id
   label?: string;
   color?: 'default'|'green'|'red';
+  sourceHandle?: string | null; // for connecting to specific handles (e.g., 'tool-bottom')
+  targetHandle?: string | null; // for connecting to specific handles
 }
 
 export interface FlowGraph {

@@ -52,6 +52,8 @@ export function FlowCanvas() {
     source: edge.source,
     target: edge.target,
     label: edge.label,
+    sourceHandle: edge.sourceHandle,
+    targetHandle: edge.targetHandle,
   })) || [];
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -111,6 +113,8 @@ export function FlowCanvas() {
             source: edge.source,
             target: edge.target,
             label: edge.label,
+            sourceHandle: edge.sourceHandle,
+            targetHandle: edge.targetHandle,
           }));
         }
 

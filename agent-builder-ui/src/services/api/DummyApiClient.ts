@@ -10,6 +10,12 @@ export class DummyApiClient implements ApiClient {
       model: 'bedrock:claude-v3',
       apiKeyMasked: '***key***',
       createdAt: '2025-10-15T00:00:00Z'
+    },{
+      id: 'l2',
+      name: 'llama-3 1-nemotron-nano-8B-v1',
+      model: 'bedrock:claude-v3',
+      apiKeyMasked: '***key***',
+      createdAt: '2025-10-15T00:00:00Z'
     }
   ];
   private resources: ResourceUpload[] = [];
@@ -65,9 +71,14 @@ export class DummyApiClient implements ApiClient {
         this.flows = JSON.parse(storedFlows);
       }
 
+      // For LLMs, merge stored data with defaults to ensure new LLMs appear
       const storedLlms = localStorage.getItem('agent-builder-llms');
       if (storedLlms) {
-        this.llms = JSON.parse(storedLlms);
+        const stored = JSON.parse(storedLlms);
+        // Merge: keep stored items and add any new default items not in storage
+        const storedIds = new Set(stored.map((llm: LlmConfig) => llm.id));
+        const newDefaultItems = this.llms.filter(llm => !storedIds.has(llm.id));
+        this.llms = [...stored, ...newDefaultItems];
       }
 
       const storedResources = localStorage.getItem('agent-builder-resources');
@@ -391,7 +402,7 @@ export class DummyApiClient implements ApiClient {
 
     // Pattern matching for different types of requests
     if (lowerMessage.includes('code review') || lowerMessage.includes('code reviewer')) {
-      responseText = 'Great! I\'ll create a code review workflow for you. This flow includes a Code Reviewer agent with the Git Tool attached, followed by a Text Summarizer to summarize the review results.';
+      responseText = 'Great! I\'ll create a code review workflow for you. This flow includes a Code Reviewer agent with the Git Tool connected, followed by a Text Summarizer to summarize the review results.';
 
       const timestamp = Date.now();
       generatedFlow = {
@@ -404,8 +415,19 @@ export class DummyApiClient implements ApiClient {
               agentId: 'ca5',
               name: 'Code Reviewer',
               description: 'Reviews code for best practices',
-              env: {},
-              attachedToolIds: ['ct9'] // Git Tool
+              env: {}
+            },
+            status: 'draft'
+          },
+          {
+            id: `tool-${timestamp}-1`,
+            kind: 'tool',
+            position: { x: 300, y: 380 },
+            data: {
+              toolId: 'ct9',
+              name: 'Git Tool',
+              description: 'Git operations for version control',
+              env: {}
             },
             status: 'draft'
           },
@@ -417,8 +439,7 @@ export class DummyApiClient implements ApiClient {
               agentId: 'ca1',
               name: 'Text Summarizer',
               description: 'Summarizes the review',
-              env: {},
-              attachedToolIds: []
+              env: {}
             },
             status: 'draft'
           }
@@ -426,7 +447,7 @@ export class DummyApiClient implements ApiClient {
         edges: [
           {
             id: `edge-${timestamp}-1`,
-            source: '__INPUT__', // Marker for existing input node
+            source: '__INPUT__',
             target: `agent-${timestamp}-1`
           },
           {
@@ -437,7 +458,14 @@ export class DummyApiClient implements ApiClient {
           {
             id: `edge-${timestamp}-3`,
             source: `agent-${timestamp}-2`,
-            target: '__OUTPUT__' // Marker for existing output node
+            target: '__OUTPUT__'
+          },
+          {
+            id: `edge-${timestamp}-tool-1`,
+            source: `agent-${timestamp}-1`,
+            sourceHandle: 'tool-bottom',
+            target: `tool-${timestamp}-1`,
+            targetHandle: null
           }
         ],
         description: 'Code Review Workflow'

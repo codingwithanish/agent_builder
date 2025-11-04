@@ -487,7 +487,7 @@ async def generate_flow_from_chat(
 
     # Pattern matching for different workflow types
     if "code review" in message_lower or "code reviewer" in message_lower:
-        response_text = "Great! I'll create a code review workflow for you. This flow includes a Code Reviewer agent with the Git Tool attached, followed by a Text Summarizer to summarize the review results."
+        response_text = "Great! I'll create a code review workflow for you. This flow includes a Code Reviewer agent with the Git Tool connected, followed by a Text Summarizer to summarize the review results."
 
         timestamp = int(datetime.utcnow().timestamp() * 1000)
         generated_flow = GeneratedFlow(
@@ -500,8 +500,19 @@ async def generate_flow_from_chat(
                         "agentId": "ca5",
                         "name": "Code Reviewer",
                         "description": "Reviews code for best practices",
-                        "env": {},
-                        "attachedToolIds": ["ct9"]
+                        "env": {}
+                    },
+                    "status": "draft"
+                },
+                {
+                    "id": f"tool-{timestamp}-1",
+                    "kind": "tool",
+                    "position": {"x": 300, "y": 380},
+                    "data": {
+                        "toolId": "ct9",
+                        "name": "Git Tool",
+                        "description": "Git operations for version control",
+                        "env": {}
                     },
                     "status": "draft"
                 },
@@ -513,8 +524,7 @@ async def generate_flow_from_chat(
                         "agentId": "ca1",
                         "name": "Text Summarizer",
                         "description": "Summarizes the review",
-                        "env": {},
-                        "attachedToolIds": []
+                        "env": {}
                     },
                     "status": "draft"
                 }
@@ -534,6 +544,13 @@ async def generate_flow_from_chat(
                     "id": f"edge-{timestamp}-3",
                     "source": f"agent-{timestamp}-2",
                     "target": "__OUTPUT__"
+                },
+                {
+                    "id": f"edge-{timestamp}-tool-1",
+                    "source": f"agent-{timestamp}-1",
+                    "sourceHandle": "tool-bottom",
+                    "target": f"tool-{timestamp}-1",
+                    "targetHandle": None
                 }
             ],
             description="Code Review Workflow"
