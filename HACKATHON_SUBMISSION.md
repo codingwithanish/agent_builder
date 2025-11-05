@@ -150,7 +150,6 @@ The dummy mode allows instant demos without backend dependencies, while real mod
 
 ## 🚀 What's next for Agent Builder
 
-### **Short-term Roadmap (3-6 months)**
 
 **1. Enhanced LLM Reasoning**
 - Multi-turn workflow refinement: "Actually, add validation before the analyzer"
@@ -167,46 +166,6 @@ The dummy mode allows instant demos without backend dependencies, while real mod
 - Workflow similarity search: "Find workflows like this one"
 - Automatic component recommendations based on flow context
 
-### **Medium-term Vision (6-12 months)**
-
-**4. Multi-Agent Orchestration**
-- Support for complex agent-to-agent communication patterns
-- Conditional branching and parallel execution flows
-- Human-in-the-loop workflows with approval gates
-
-**5. Observability & Monitoring**
-- Real-time execution dashboards
-- Automatic anomaly detection using embeddings on logs
-- Performance optimization recommendations from llama-3.1-nemotron
-
-**6. Enterprise Features**
-- Role-based access control and audit logging
-- Multi-tenant workspace management
-- On-premises deployment options with air-gapped NVIDIA NIM instances
-
-### **Long-term Goals (12+ months)**
-
-**7. Autonomous Optimization**
-- Self-healing workflows that adapt to failures
-- A/B testing different agent configurations automatically
-- Continuous learning from execution patterns to improve future generations
-
-**8. Natural Language Debugging**
-- "Why did this workflow fail?" → LLM analyzes logs and explains
-- "How can I make this faster?" → Automatic bottleneck identification and fixes
-- Voice interface for workflow creation and monitoring
-
-**9. Universal Integration Layer**
-- Connect to any API, database, or service through natural language
-- Automatic adapter generation for new tools
-- Cross-platform deployment (Azure, GCP, on-prem)
-
-### **Research Directions**
-
-- **Multi-modal Workflows**: Support for image/video processing pipelines with vision models
-- **Federated Learning Integration**: Agents that learn from distributed data sources
-- **Blockchain-based Agent Marketplace**: Decentralized component sharing with provenance tracking
-- **Fine-tuned Domain NIMs**: Specialized reasoning models for healthcare, finance, legal workflows
 
 ---
 
