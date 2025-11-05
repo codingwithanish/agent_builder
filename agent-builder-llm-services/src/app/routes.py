@@ -478,7 +478,52 @@ async def generate_flow_from_chat(
     import asyncio
     from datetime import datetime
 
-    # Simulate processing delay
+    # Check if we should use real NVIDIA NIMs or dummy mode
+    if app_mode == AppMode.REAL and settings.has_provider_credentials(LLMProvider.NVIDIA):
+        try:
+            # Import service manager
+            from ..services.service_manager import service_manager
+
+            # Get workflow generator (handles initialization and caching)
+            workflow_generator = await service_manager.get_workflow_generator()
+
+            # Convert chat history to proper format
+            conversation_history = [
+                {"role": msg.role, "content": msg.content}
+                for msg in request.history
+            ]
+
+            # Generate workflow using NVIDIA NIMs
+            result = await workflow_generator.generate_workflow(
+                user_message=request.message,
+                conversation_history=conversation_history
+            )
+
+            # Create response
+            assistant_message = ChatMessage(
+                id=f"msg-{int(datetime.utcnow().timestamp() * 1000)}",
+                role="assistant",
+                content=result['response_text'],
+                timestamp=datetime.utcnow().isoformat()
+            )
+
+            generated_flow = None
+            if result.get('generated_flow'):
+                generated_flow = GeneratedFlow(**result['generated_flow'])
+
+            return ChatResponse(
+                response=assistant_message,
+                generatedFlow=generated_flow
+            )
+
+        except Exception as e:
+            # Log error and fall back to dummy mode
+            import structlog
+            logger = structlog.get_logger()
+            logger.error("Error using NVIDIA NIMs, falling back to dummy mode", error=str(e))
+            # Fall through to dummy mode below
+
+    # Dummy mode or fallback
     await asyncio.sleep(1.0)
 
     message_lower = request.message.lower()

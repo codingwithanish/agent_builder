@@ -19,6 +19,7 @@ class LLMProvider(str, Enum):
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     AZURE_OPENAI = "azure-openai"
+    NVIDIA = "nvidia"
 
 
 class Settings(BaseSettings):
@@ -46,12 +47,17 @@ class Settings(BaseSettings):
     
     # AWS Bedrock
     bedrock_region: str = Field(default="us-east-1", description="AWS Bedrock region")
-    
+
+    # NVIDIA NIMs
+    nvidia_api_key: Optional[str] = Field(default=None, description="NVIDIA API key")
+    nvidia_base_url: str = Field(default="https://integrate.api.nvidia.com/v1", description="NVIDIA API base URL")
+
     # Model Allowlists
     allowed_bedrock_models: List[str] = Field(default_factory=list, description="Allowed Bedrock models")
     allowed_openai_models: List[str] = Field(default_factory=list, description="Allowed OpenAI models")
     allowed_anthropic_models: List[str] = Field(default_factory=list, description="Allowed Anthropic models")
     allowed_azure_models: List[str] = Field(default_factory=list, description="Allowed Azure models")
+    allowed_nvidia_models: List[str] = Field(default_factory=list, description="Allowed NVIDIA models")
     
     # Request Limits
     max_tokens_limit: int = Field(default=8192, description="Maximum tokens limit")
@@ -79,7 +85,7 @@ class Settings(BaseSettings):
         env_file_encoding = "utf-8"
         case_sensitive = False
         
-    @validator("allowed_bedrock_models", "allowed_openai_models", "allowed_anthropic_models", "allowed_azure_models", pre=True)
+    @validator("allowed_bedrock_models", "allowed_openai_models", "allowed_anthropic_models", "allowed_azure_models", "allowed_nvidia_models", pre=True)
     def parse_csv_list(cls, v):
         """Parse comma-separated list from environment."""
         if isinstance(v, str):
@@ -100,6 +106,7 @@ class Settings(BaseSettings):
             LLMProvider.OPENAI: self.allowed_openai_models,
             LLMProvider.ANTHROPIC: self.allowed_anthropic_models,
             LLMProvider.AZURE_OPENAI: self.allowed_azure_models,
+            LLMProvider.NVIDIA: self.allowed_nvidia_models,
         }
         return model_map.get(provider, [])
     
@@ -117,11 +124,12 @@ class Settings(BaseSettings):
             LLMProvider.OPENAI: bool(self.openai_api_key),
             LLMProvider.ANTHROPIC: bool(self.anthropic_api_key),
             LLMProvider.AZURE_OPENAI: bool(
-                self.azure_openai_api_key and 
-                self.azure_openai_endpoint and 
+                self.azure_openai_api_key and
+                self.azure_openai_endpoint and
                 self.azure_openai_deployment
             ),
             LLMProvider.BEDROCK: True,  # Uses AWS SDK credential chain
+            LLMProvider.NVIDIA: bool(self.nvidia_api_key),
         }
         return credential_map.get(provider, False)
 
